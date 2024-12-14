@@ -1,4 +1,5 @@
 #   Initializing our (empty) blockchain list
+MINING_REWARD = 10
 genesis_block = {
     'pervious_hash': '',
     'index': 0,
@@ -27,7 +28,13 @@ def get_balance(participant):
     for tx in tx_sender:
         if len(tx) > 0:
             amount_sent += tx[0]
-    return amount_sent
+    tx_recipient = [[tx['amount']for tx in block['transactions'] if tx['sender'] == participant]
+                    for block in blockchain]
+    amount_received = 0
+    for tx in tx_recipient:
+        if len(tx) > 0:
+            amount_received += tx[0]
+    return amount_received - amount_sent
 
 
 def get_last_blockchain_value():
@@ -37,9 +44,19 @@ def get_last_blockchain_value():
     return blockchain[-1]
 
 
+def verify_transaction(transaction):
+    sender_balance = get_balance(transaction['sender'])
+    if sender_balance >= transaction['amount']:
+        return True
+    else:
+        return False
+
+
 # This fucntion accepts two arguments.
 # One required one  (transaction_amout), and one  optional one (last_transaction)
 # the optional one is becuse it has a default value => [1]
+
+
 def add_transaction(recipient, sender=owner, amount=1.0):
     """ Append a new Value aw well as the last blockchain value to the blockchian
 
@@ -51,16 +68,22 @@ def add_transaction(recipient, sender=owner, amount=1.0):
     transaction = {
         'sender': sender, 'recipient': recipient, 'amount': amount
     }
-    open_transactions.append(transaction)
-    participants.add(sender)
-    participants.add(recipient)
-    print(open_transactions)
+    if verify_transaction(transaction):
+        open_transactions.append(transaction)
+        participants.add(sender)
+        participants.add(recipient)
+        print(open_transactions)
+        return True
+    return False
 
 
 def mine_block():
     last_block = blockchain[-1]
     hashed_block = hash_block(last_block)
-    print(hashed_block)
+    reward_tranaction = {
+        'sender': 'MININNG', 'recipinet': owner, amount: MINING_REWARD
+    }
+    open_transactions.append(reward_tranaction)
     block = {
         'pervious_hash': hashed_block,
         'index': len(blockchain),
