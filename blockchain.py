@@ -149,6 +149,12 @@ def print_blockchain_elements():
 
 def verify_chain():
     '''Verify the current blockchain and return True if it's valid , False otherwise'''
+    for (index, block) in blockchain:
+        if index == 0:
+            continue
+        if block['pervious_hash'] != hash_block(blockchain[index-1]):
+            return False
+    return True
 
 
 waitin_for_input = True
