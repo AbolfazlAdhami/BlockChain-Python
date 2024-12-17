@@ -21,7 +21,7 @@ participants = {'Abolfazl'}
 def hash_block(block):
     """ retunr the hash string for minning a new block
     Args:
-        block : last block of a blockchain list 
+        block : last block of a blockchain list
     Returns:
         hash: join all block key with -
     """
@@ -32,10 +32,10 @@ def get_balance(participant):
     """Calculate and return the balanced for ad participant.
 
     Args:
-        participant (String): The person for whom to calculate the balanced 
+        participant (String): The person for whom to calculate the balanced
 
     Returns:
-        Number: Differnt between received and send amount 
+        Number: Differnt between received and send amount
     """
     #  Fetch a list of all sent coin amount for the given person (empty lists are returned if the person was NOT the sender)
     #  This fetches sent amounts of transactions that were already included in blocks of the blockchain
@@ -74,7 +74,7 @@ def verify_transaction(transaction):
     """Verify a transaction by checking whether the sender has sufficient coins.
 
     Args:
-        transaction: The transaction that should be verified 
+        transaction: The transaction that should be verified
     """
     sender_balance = get_balance(transaction['sender'])
     return sender_balance >= transaction['amount']
@@ -157,8 +157,17 @@ def verify_chain():
     return True
 
 
-waitin_for_input = True
+def verify_transctions():
+    is_valid = True
+    for tx in open_transactions:
+        if verify_transaction(tx):
+            is_valid = True
+        else:
+            is_valid = False
+    return is_valid
 
+
+waitin_for_input = True
 #  A While Loop for User input interface
 #  It's a  loop exsit once waiting_for_input becomes False oe wehen break is called
 while waitin_for_input:
@@ -167,6 +176,7 @@ while waitin_for_input:
     print('2: Mine a new Block.')
     print('3: Output the Blockchain Blocks.')
     print('4: Output participants')
+    print('5: Check transaction validity')
     print('h: Manipulate th chain')
     print('q: Quit')
     user_choise = get_user_choise()
@@ -195,6 +205,8 @@ while waitin_for_input:
             }
     elif user_choise == '4':
         print(participants)
+    elif user_choise == '5':
+        verify_transctions()
     elif user_choise == 'q':
         # This will load to the loop to exist becuse it's runnig condition becomes False
         waitin_for_input = False
