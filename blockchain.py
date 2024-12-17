@@ -149,7 +149,7 @@ def print_blockchain_elements():
 
 def verify_chain():
     '''Verify the current blockchain and return True if it's valid , False otherwise'''
-    for (index, block) in blockchain:
+    for (index, block) in enumerate(blockchain):
         if index == 0:
             continue
         if block['pervious_hash'] != hash_block(blockchain[index-1]):
@@ -158,13 +158,7 @@ def verify_chain():
 
 
 def verify_transctions():
-    is_valid = True
-    for tx in open_transactions:
-        if verify_transaction(tx):
-            is_valid = True
-        else:
-            is_valid = False
-    return is_valid
+    return all([verify_transaction(tx) for tx in open_transactions])
 
 
 waitin_for_input = True
@@ -206,7 +200,10 @@ while waitin_for_input:
     elif user_choise == '4':
         print(participants)
     elif user_choise == '5':
-        verify_transctions()
+        if verify_transctions():
+            print("All transactions Valid")
+        else:
+            print("There are invalid transactions")
     elif user_choise == 'q':
         # This will load to the loop to exist becuse it's runnig condition becomes False
         waitin_for_input = False
