@@ -1,3 +1,4 @@
+import functools
 
 # The reward we give to miners (for creating a new Block)
 MINING_REWARD = 10
@@ -40,25 +41,22 @@ def get_balance(participant):
     #  Fetch a list of all sent coin amount for the given person (empty lists are returned if the person was NOT the sender)
     #  This fetches sent amounts of transactions that were already included in blocks of the blockchain
     tx_sender = [[tx['amount'] for tx in block['transactions']
-                  if tx['sender'] == participant]for block in blockchain]
+                  if tx['sender'] == participant] for block in blockchain]
+
     # Fetch a list of all sent coins amounts for the given person
     # This fetches sent amount of open transctions (to avoid double spending)
     open_tx_sender = [tx['amount']
                       for tx in open_transactions if tx['sender'] == participant]
     tx_sender.append(open_tx_sender)
-    amount_sent = 0
     # Calculate the total amount of coins sent
-    for tx in tx_sender:
-        if len(tx) > 0:
-            amount_sent += tx[0]
+    amount_sent = functools.reduce(
+        lambda tx_sum, tx_amt: tx_sum+tx_amt[0] if len(tx_amt) > 0 else 0, tx_sender, 0)
     # This is fetches received coin amounts of transactions that were already included in block of the blockchain
     # we ignore open transactions here because you shouldn't be able to spend coins before the transaxtion was confirmed + included in a block
     tx_recipient = [[tx['amount']for tx in block['transactions'] if tx['sender'] == participant]
                     for block in blockchain]
-    amount_received = 0
-    for tx in tx_recipient:
-        if len(tx) > 0:
-            amount_received += tx[0]
+    amount_received = functools.reduce(
+        lambda tx_sum, tx_amt: tx_sum+tx_amt[0]if len(tx_amt) > 0 else 0, tx_recipient, 0)
     #  Return the totla balance
     return amount_received - amount_sent
 
@@ -99,6 +97,7 @@ def add_transaction(recipient, sender=owner, amount=1.0):
         participants.add(recipient)
         print(open_transactions)
         return True
+
     return False
 
 
@@ -110,7 +109,7 @@ def mine_block():
     hashed_block = hash_block(last_block)
     # Miners should be rewarded, so let's create a reward transaction
     reward_tranaction = {
-        'sender': 'MININNG', 'recipinet': owner, amount: MINING_REWARD
+        'sender': 'MININNG', 'recipinet': owner, 'amount': MINING_REWARD
     }
     copied_transactions = open_transactions[:]
     copied_transactions.append(reward_tranaction)
@@ -120,6 +119,7 @@ def mine_block():
         'transactions': copied_transactions
     }
     blockchain.append(block)
+    print(blockchain)
     return True
 
 
@@ -176,8 +176,8 @@ while waitin_for_input:
     user_choise = get_user_choise()
     if user_choise == '1':
         tx_data = get_transaction_value()
-        # Add the tx_data to opne transaction
         recipient, amount = tx_data
+        # Add new transaction to the blockchain
         if add_transaction(recipient, amount=amount):
             print("Transaction Successfully Added")
         else:
@@ -201,7 +201,7 @@ while waitin_for_input:
         print(participants)
     elif user_choise == '5':
         if verify_transctions():
-            print("All transactions Valid")
+            print("Alltransactions Valid")
         else:
             print("There are invalid transactions")
     elif user_choise == 'q':
@@ -214,7 +214,7 @@ while waitin_for_input:
         print("Invalid Blockchain!")
         # Break out of loop
         break
-    print("Balanced", get_balance('Abolfazl'))
+    print("Balanced of {}: {:6.2f}".format(owner, get_balance(owner)))
 
 
 print('Done!')
