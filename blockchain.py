@@ -1,4 +1,6 @@
 import functools
+import json
+import hashlib
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
 
@@ -24,7 +26,7 @@ def hash_block(block):
     Arguments:
         :block: The block that should be hashed.
     """
-    return '-'.join([str(block[key]) for key in block])
+    return hashlib.sha256(json.dumps(block).encode()).hexdigest()
 
 
 def get_balance(participant):
@@ -43,7 +45,6 @@ def get_balance(participant):
     open_tx_sender = [tx['amount']
                       for tx in open_transactions if tx['sender'] == participant]
     tx_sender.append(open_tx_sender)
-    print(tx_sender, open_tx_sender)
     # Calculate the total amount of coins sent
     amount_sent = functools.reduce(
         lambda tx_sum, tx_amt: tx_sum+sum(tx_amt)if len(tx_amt) > 0 else tx_sum+0, tx_sender, 0)
@@ -105,6 +106,7 @@ def mine_block():
     last_block = blockchain[-1]
     # Hash the last block (=> to be able to compare it to the stored hash value)
     hashed_block = hash_block(last_block)
+    print(hash_block)
     # Miners should be rewarded, so let's create a reward transaction
     reward_transaction = {
         'sender': 'MINING',
