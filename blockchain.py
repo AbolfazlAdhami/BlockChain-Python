@@ -1,6 +1,7 @@
-import functools
+from functools import reduce
 import hashlib as hl
 import json
+from collections import OrderedDict
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
 
@@ -24,7 +25,6 @@ participants = {'Abolfazl'}
 def valid_proof(transactions, lastHash, proof):
     guess = (str(transactions)+str(lastHash)+str(proof)).encode()
     guess_hash = hl.sha256(guess).hexdigest()
-    guess_hashes.append(guess_hash)
     return guess_hash[0:2] == '00'
 
 
@@ -34,7 +34,6 @@ def proof_of_work():
     proof = 0
     while not valid_proof(open_transactions, last_hash, proof):
         proof += 1
- 
     return proof
 
 
@@ -44,7 +43,7 @@ def hash_block(block):
     Arguments:
         :block: The block that should be hashed.
     """
-    return hl.sha256(json.dumps(block).encode()).hexdigest()
+    return hl.sha256(json.dumps(block, sort_keys=True).encode()).hexdigest()
 
 
 def get_balance(participant):
@@ -64,13 +63,13 @@ def get_balance(participant):
                       for tx in open_transactions if tx['sender'] == participant]
     tx_sender.append(open_tx_sender)
     # Calculate the total amount of coins sent
-    amount_sent = functools.reduce(
+    amount_sent = reduce(
         lambda tx_sum, tx_amt: tx_sum+sum(tx_amt)if len(tx_amt) > 0 else tx_sum+0, tx_sender, 0)
     # This fetches received coin amounts of transactions that were already included in blocks of the blockchain
     # We ignore open transactions here because you shouldn't be able to spend coins before the transaction was confirmed + included in a block
     tx_recipient = [[tx['amount'] for tx in block['transactions']
                      if tx['recipient'] == participant] for block in blockchain]
-    amount_received = functools.reduce(
+    amount_received = reduce(
         lambda tx_sum, tx_amt: tx_sum+sum(tx_amt)if len(tx_amt) > 0 else tx_sum+0, tx_recipient, 0)
     # Return the total balance
     return amount_received - amount_sent
@@ -126,11 +125,8 @@ def mine_block():
     hashed_block = hash_block(last_block)
     proof = proof_of_work()
     # Miners should be rewarded, so let's create a reward transaction
-    reward_transaction = {
-        'sender': 'MINING',
-        'recipient': owner,
-        'amount': MINING_REWARD
-    }
+    reward_transaction = OrderedDict(
+        [('sender', 'MINING'), ('recipient', owner), ('amount', MINING_REWARD)])
     # Copy transaction instead of manipulating the original open_transactions list
     # This ensures that if for some reason the mining should fail, we don't have the reward transaction stored in the open transactions
     copied_transactions = open_transactions[:]
