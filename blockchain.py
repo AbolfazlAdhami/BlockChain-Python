@@ -1,6 +1,6 @@
-import functools
+import functools as reduce
+import hashlib as hl
 import json
-import hashlib
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
 
@@ -20,13 +20,15 @@ owner = 'Abolfazl'
 participants = {'Abolfazl'}
 
 
+
+
 def hash_block(block):
     """Hashes a block and returns a string representation of it.
 
     Arguments:
         :block: The block that should be hashed.
     """
-    return hashlib.sha256(json.dumps(block).encode()).hexdigest()
+    return hl.sha256(json.dumps(block).encode()).hexdigest()
 
 
 def get_balance(participant):
@@ -46,13 +48,13 @@ def get_balance(participant):
                       for tx in open_transactions if tx['sender'] == participant]
     tx_sender.append(open_tx_sender)
     # Calculate the total amount of coins sent
-    amount_sent = functools.reduce(
+    amount_sent = reduce(
         lambda tx_sum, tx_amt: tx_sum+sum(tx_amt)if len(tx_amt) > 0 else tx_sum+0, tx_sender, 0)
     # This fetches received coin amounts of transactions that were already included in blocks of the blockchain
     # We ignore open transactions here because you shouldn't be able to spend coins before the transaction was confirmed + included in a block
     tx_recipient = [[tx['amount'] for tx in block['transactions']
                      if tx['recipient'] == participant] for block in blockchain]
-    amount_received = functools.reduce(
+    amount_received = reduce(
         lambda tx_sum, tx_amt: tx_sum+sum(tx_amt)if len(tx_amt) > 0 else tx_sum+0, tx_recipient, 0)
     # Return the total balance
     return amount_received - amount_sent
