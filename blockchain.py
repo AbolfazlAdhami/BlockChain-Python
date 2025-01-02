@@ -2,6 +2,7 @@ from functools import reduce
 from collections import OrderedDict
 import hashlib as hl
 from hash_util import hash_string_256, hash_block
+from files import save_file
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
 
@@ -22,8 +23,20 @@ owner = 'Abolfazl'
 participants = {'Abolfazl'}
 
 
-def valid_proof(transactions, lastHash, proof):
-    guess = (str(transactions)+str(lastHash)+str(proof)).encode()
+def load_data():
+    with open("blockchian.txt", mode='r') as f:
+        file_content = f.readline()
+        global blockchain
+        global open_transactions
+        blockchain = file_content[0]
+        open_transactions = file_content[1]
+
+
+load_data()
+
+
+def valid_proof(transactions, last_hash, proof):
+    guess = (str(transactions)+str(last_hash)+str(proof)).encode()
     guess_hash = hash_string_256(guess)
     return guess_hash[0:2] == '00'
 
@@ -104,7 +117,9 @@ def add_transaction(recipient, sender=owner, amount=1.0):
         open_transactions.append(transaction)
         participants.add(sender)
         participants.add(recipient)
+        save_file(blockchain, open_transactions)
         return True
+
     return False
 
 
@@ -129,6 +144,7 @@ def mine_block():
         'proof': proof
     }
     blockchain.append(block)
+    save_file(blockchain, open_transactions)
     return True
 
 
