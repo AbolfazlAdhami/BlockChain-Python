@@ -1,8 +1,8 @@
 from functools import reduce
 from collections import OrderedDict
-import hashlib as hl
 from hash_util import hash_string_256, hash_block
 from files import save_file
+import json
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
 
@@ -25,11 +25,11 @@ participants = {'Abolfazl'}
 
 def load_data():
     with open("blockchian.txt", mode='r') as f:
-        file_content = f.readline()
+        file_content = f.readlines()
         global blockchain
         global open_transactions
-        blockchain = file_content[0]
-        open_transactions = file_content[1]
+        blockchain = json.loads(file_content[0][:-1])
+        open_transactions = json.loads(file_content[1])
 
 
 load_data()
