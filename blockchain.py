@@ -29,7 +29,25 @@ def load_data():
         global blockchain
         global open_transactions
         blockchain = json.loads(file_content[0][:-1])
+        updated_blockchain = []
+        for block in blockchain:
+            updated_block = {
+                'previous_hash': block['previous_hash'],
+                'index': block['index'],
+                'proof': block['proof'], 'transactions': [OrderedDict([('sender', tx['sender']), ('recipient', tx['recipient']), ('amount', tx['amount'])]) for tx in block['transactions']]
+
+            }
+            updated_blockchain.append(updated_block)
+        blockchain = updated_blockchain
+        updated_transactions = []
         open_transactions = json.loads(file_content[1])
+        for tx in open_transactions:
+            update_transaction = OrderedDict([
+                [('sender', tx['sender']), ('recipient',
+                                            tx['recipient']), ('amount', tx['amount'])]
+            ])
+            updated_transactions.append(update_transaction)
+        open_transactions = updated_transactions
 
 
 load_data()
@@ -117,7 +135,6 @@ def add_transaction(recipient, sender=owner, amount=1.0):
         open_transactions.append(transaction)
         participants.add(sender)
         participants.add(recipient)
-        save_file(blockchain, open_transactions)
         return True
 
     return False
@@ -216,6 +233,7 @@ while waiting_for_input:
     elif user_choice == '2':
         if mine_block():
             open_transactions = []
+        save_file(blockchain, open_transactions)
     elif user_choice == '3':
         print_blockchain_elements()
     elif user_choice == '4':
