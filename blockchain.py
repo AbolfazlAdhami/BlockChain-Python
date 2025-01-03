@@ -2,20 +2,13 @@ from functools import reduce
 from collections import OrderedDict
 from hash_util import hash_string_256, hash_block
 from files import save_file
-import json
-import pickle
+from pickle import loads
+
+
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
-
-# Our starting block for the blockchain
-genesis_block = {
-    'previous_hash': '',
-    'index': 0,
-    'transactions': [],
-    'proof': 100
-}
 # Initializing our (empty) blockchain list
-blockchain = [genesis_block]
+blockchain = []
 # Unhandled transactions
 open_transactions = []
 # We are the owner of this blockchain node, hence this is our identifier (e.g. for sending coins)
@@ -25,18 +18,43 @@ participants = {'Abolfazl'}
 
 
 def load_data():
-    with open("blockchian.p", mode='rb') as f:
-        file_content = pickle.loads(f.read())
+    try:
+        with open("blockchian.p", mode='rb') as f:
+            file_content = pickle.loads(f.read())
 
-        global blockchain
-        global open_transactions
-        blockchain = file_content['chain']
-        open_transactions = file_content['ot']
-
-load_data()
+            global blockchain
+            global open_transactions
+            blockchain = file_content['chain']
+            open_transactions = file_content['ot']
+    except IOError:
+        print("File Not Found!")
+        # Our starting block for the blockchain
+        genesis_block = {
+            'previous_hash': '',
+            'index': 0,
+            'transactions': [],
+            'proof': 100
+        }
+        # Initializing our (empty) blockchain list
+        blockchain = [genesis_block]
+        # Unhandled transactions
+        open_transactions = []
+    finally:
+        print("Cleanup!")
+    load_data()
 
 
 def valid_proof(transactions, last_hash, proof):
+    """_summary_
+
+    Args:
+        transactions (_type_): _description_
+        last_hash (_type_): _description_
+        proof (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     guess = (str(transactions)+str(last_hash)+str(proof)).encode()
     guess_hash = hash_string_256(guess)
     return guess_hash[0:2] == '00'
