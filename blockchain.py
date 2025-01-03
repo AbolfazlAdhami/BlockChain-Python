@@ -3,6 +3,7 @@ from collections import OrderedDict
 from hash_util import hash_string_256, hash_block
 from files import save_file
 import json
+import pickle
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
 
@@ -24,31 +25,13 @@ participants = {'Abolfazl'}
 
 
 def load_data():
-    with open("blockchian.txt", mode='r') as f:
-        file_content = f.readlines()
+    with open("blockchian.p", mode='rb') as f:
+        file_content = pickle.loads(f.read())
+
         global blockchain
         global open_transactions
-        blockchain = json.loads(file_content[0][:-1])
-        updated_blockchain = []
-        for block in blockchain:
-            updated_block = {
-                'previous_hash': block['previous_hash'],
-                'index': block['index'],
-                'proof': block['proof'], 'transactions': [OrderedDict([('sender', tx['sender']), ('recipient', tx['recipient']), ('amount', tx['amount'])]) for tx in block['transactions']]
-
-            }
-            updated_blockchain.append(updated_block)
-        blockchain = updated_blockchain
-        updated_transactions = []
-        open_transactions = json.loads(file_content[1])
-        for tx in open_transactions:
-            update_transaction = OrderedDict([
-                [('sender', tx['sender']), ('recipient',
-                                            tx['recipient']), ('amount', tx['amount'])]
-            ])
-            updated_transactions.append(update_transaction)
-        open_transactions = updated_transactions
-
+        blockchain = file_content['chain']
+        open_transactions = file_content['ot']
 
 load_data()
 

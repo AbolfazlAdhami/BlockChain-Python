@@ -1,8 +1,9 @@
-import json
+import pickle
 
 
 def save_file(blockchain, open_transactions):
-    with open("blockchian.txt", mode='w') as f:
-        f.write(json.dumps(blockchain))
-        f.write('\n')
-        f.write(json.dumps(open_transactions))
+    with open("blockchian.p", mode='wb') as f:
+        save_data = {
+            'chain': blockchain, 'ot': open_transactions
+        }
+        f.write(pickle.dumps(save_data))
