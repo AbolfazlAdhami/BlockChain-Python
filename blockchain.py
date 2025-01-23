@@ -4,7 +4,7 @@ from hash_util import hash_string_256, hash_block
 from files import save_file
 from pickle import loads
 
-
+impo
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
 # Initializing our (empty) blockchain list
@@ -18,9 +18,11 @@ participants = {'Abolfazl'}
 
 
 def load_data():
+    """_summary_
+    """
     try:
-        with open("blockchian.p", mode='rb') as f:
-            file_content = pickle.loads(f.read())
+        with open("blockchain.p", mode='rb') as f:
+            file_content = loads(f.read())
 
             global blockchain
             global open_transactions
