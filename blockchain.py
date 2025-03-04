@@ -1,12 +1,13 @@
+# Import Builtin Class/Function
 from functools import reduce
-from collections import OrderedDict
-from hash_util import hash_string_256, hash_block
-from files import save_file
-from pickle import loads
+import json
+
+# Import Class/Functions
+from hash_util import hash_block
+from block import Block
 
 
-# The reward we give to miners (for creating a new block)
-MINING_REWARD = 10
+
 # Initializing our (empty) blockchain list
 blockchain = []
 # Unhandled transactions
@@ -15,6 +16,24 @@ open_transactions = []
 owner = 'Abolfazl'
 # Registered participants: Ourself + other people sending/ receiving coins
 participants = {'Abolfazl'}
+
+# The reward we give to miners (for creating a new block)
+MINING_REWARD = 10
+
+
+class Blockchain:
+    """ The Blockchain class manage the chain of blocks as well as open transactions
+
+    Returns:
+        _type_: _description_
+    """
+
+
+
+
+
+
+
 
 
 def load_data():
@@ -45,21 +64,6 @@ def load_data():
         print("Cleanup!")
     load_data()
 
-
-def valid_proof(transactions, last_hash, proof):
-    """_summary_
-
-    Args:
-        transactions (_type_): _description_
-        last_hash (_type_): _description_
-        proof (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-    guess = (str(transactions)+str(last_hash)+str(proof)).encode()
-    guess_hash = hash_string_256(guess)
-    return guess_hash[0:2] == '00'
 
 
 def proof_of_work():
