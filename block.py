@@ -1,5 +1,6 @@
 from time import time
 
+from printable import Pri
 
 class Block:
     def __init__(self, index, pervious_hash, transactions, proof, time=time()):
