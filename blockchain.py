@@ -5,18 +5,8 @@ import json
 # Import Class/Functions
 from hash_util import hash_block
 from block import Block
-
-
-
-# Initializing our (empty) blockchain list
-blockchain = []
-# Unhandled transactions
-open_transactions = []
-# We are the owner of this blockchain node, hence this is our identifier (e.g. for sending coins)
-owner = 'Abolfazl'
-# Registered participants: Ourself + other people sending/ receiving coins
-participants = {'Abolfazl'}
-
+from transaction import Transaction
+from verifiaction import Verification
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
 
@@ -28,42 +18,50 @@ class Blockchain:
         _type_: _description_
     """
 
+    def __init__(self, hosting_node_id):
+        """The constructor of the Blockcain class."""
+        # Our Starting block for the blockchain
+        genesis_block = Block(0, '', [], 100, 0)
+        # Initializing out (empty) blockchain list
+        self.chain = [genesis_block]
+        # Unhandled tranactions
+        self.__open_transactions = []
+        self.load_data()
+        self.hosting_node = hosting_node_id
 
+    # This turns the chain attributes into a property with a getter (the method below) and a setter (@chain.setter)
+    @property
+    def chain(self):
+        return self.__chain[:]
+    # The setter for the chain property
 
+    @chain.setter
+    def chain(self, val):
+        self.__chain = val
 
+    def get_open_transactions(self):
+        """Return a copy of the open transactions list."""
+        return self.__open_transactions[:]
 
-
-
-
-
-def load_data():
-    """_summary_
-    """
-    try:
-        with open("blockchain.p", mode='rb') as f:
-            file_content = loads(f.read())
-
-            global blockchain
-            global open_transactions
-            blockchain = file_content['chain']
-            open_transactions = file_content['ot']
-    except IOError:
-        print("File Not Found!")
-        # Our starting block for the blockchain
-        genesis_block = {
-            'previous_hash': '',
-            'index': 0,
-            'transactions': [],
-            'proof': 100
-        }
-        # Initializing our (empty) blockchain list
-        blockchain = [genesis_block]
-        # Unhandled transactions
-        open_transactions = []
-    finally:
-        print("Cleanup!")
-    load_data()
-
+    def load_data(self):
+        """Initialize blockchain + open transaciotns data from a file"""
+        try:
+            with open('blockchian.txt', mode='r') as f:
+                file_content = f.readline()
+                blockchain = json.loads(file_content[0][:-1])
+                # We need to convert the loadded data because Transactions should use OrderDict
+                updated_blockchain = []
+                for block in blockchain:
+                    converted_tx = [Transaction(
+                        ('sender', self.sender), ('recipient', self.recipient), ('amount', self.amount))for _ in block['transactions']]
+                    updated_block = Block(
+                        block('index'), block['pervious_hash'], converted_tx,)
+                    updated_blockchain.append(updated_block)
+                self.chain = updated_blockchain
+        except IOError:
+            pass
+        finally:
+            print("Cleanup!")
 
 
 def proof_of_work():
@@ -209,68 +207,4 @@ def verify_chain():
     return True
 
 
-def verify_transactions():
-    """Verifies all open transactions."""
-    return all([verify_transaction(tx) for tx in open_transactions])
 
-
-waiting_for_input = True
-
-# A while loop for the user input interface
-# It's a loop that exits once waiting_for_input becomes False or when break is called
-while waiting_for_input:
-    print('Please choose')
-    print('1: Add a new transaction value')
-    print('2: Mine a new block')
-    print('3: Output the blockchain blocks')
-    print('4: Output participants')
-    print('5: Check transaction validity')
-    print('h: Manipulate the chain')
-    print('q: Quit')
-    user_choice = get_user_choice()
-    if user_choice == '1':
-        tx_data = get_transaction_value()
-        recipient, amount = tx_data
-        # Add the transaction amount to the blockchain
-        if add_transaction(recipient, amount=amount):
-            print('Added transaction!')
-        else:
-            print('Transaction failed!')
-        print(open_transactions)
-    elif user_choice == '2':
-        if mine_block():
-            open_transactions = []
-        save_file(blockchain, open_transactions)
-    elif user_choice == '3':
-        print_blockchain_elements()
-    elif user_choice == '4':
-        print(participants)
-    elif user_choice == '5':
-        if verify_transactions():
-            print('All transactions are valid')
-        else:
-            print('There are invalid transactions')
-    elif user_choice == 'h':
-        # Make sure that you don't try to "hack" the blockchain if it's empty
-        if len(blockchain) >= 1:
-            blockchain[0] = {
-                'previous_hash': '',
-                'index': 0,
-                'transactions': [{'sender': 'Chris', 'recipient': 'Abolfazl', 'amount': 100.0}]
-            }
-    elif user_choice == 'q':
-        # This will lead to the loop to exist because it's running condition becomes False
-        waiting_for_input = False
-    else:
-        print('Input was invalid, please pick a value from the list!')
-    if not verify_chain():
-        print_blockchain_elements()
-        print('Invalid blockchain!')
-        # Break out of the loop
-        break
-    print('Balance of {}: {:6.2f}'.format('Abolfazl', get_balance('Abolfazl')))
-else:
-    print('User left!')
-
-
-print('Done!')

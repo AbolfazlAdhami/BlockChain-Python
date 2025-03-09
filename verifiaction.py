@@ -1,4 +1,4 @@
-from hash_util import hash_string_256
+from hash_util import hash_string_256, hash_block
 
 
 class Verification:
@@ -14,7 +14,8 @@ class Verification:
         """
 
         # Create a string with all the hash inputs
-        guess = (str())
+        guess = (str([tx.to_ordered_dict() for tx in transactions]
+                     ) + str(last_hash)+str(proof)).encode()
         # Hash the string
         # IMPORTANT : This is NOT the same hash as will be stored in the previos_hash. It's a not a block's hash. It's only used for proof-of-work algorithm.
         guess_hash = hash_string_256(guess)
@@ -28,6 +29,12 @@ class Verification:
         for (index, block) in enumerate(blockchain):
             if index == 0:
                 continue
+            if block.pervios_hash != hash_block(blockchain[index-1]):
+                return False
+            if not cls.valid_proof(block.transactions[:-1], block.previous_hash, block.proof):
+                print("Proof of work is invalid")
+                return False
+            return True
 
     @staticmethod
     def verify_transaction(transaction, get_balance):
@@ -42,4 +49,4 @@ class Verification:
     @classmethod
     def verify_transactions(cls, open_transactions, get_balance):
         '''Verifies all open transactions.'''
-        return all([cls.verify_transaction])
+        return all([cls.verify_transaction(tx, get_balance) for tx in open_transactions])
