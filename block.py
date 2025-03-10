@@ -14,9 +14,9 @@ class Block(Printable):
         proof: The proof of work number that yielded this block.
     """
 
-    def __init__(self, index, pervious_hash, transactions, proof, time=time()):
+    def __init__(self, index, previous_hash, transactions, proof, time=time()):
         self.index = index
-        self.pervious_hash = pervious_hash
+        self.previous_hash = previous_hash
         self.timestamp = time
         self.transactions = transactions
         self.proof = proof
