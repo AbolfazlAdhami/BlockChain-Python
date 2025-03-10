@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from blockchain import Blockchain
-from verifiaction import Verification
+from utility.verifiaction import Verification
 
 
 class Node:
