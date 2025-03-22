@@ -1,14 +1,15 @@
 from collections import OrderedDict
+
 from utility.printable import Printable
 
 
 class Transaction(Printable):
-    """ A transaction which can be added a block in the blockchain.
+    """A transaction which can be added to a block in the blockchain.
 
     Attributes:
-        :sender : The sender of the coins.
-        :recipient : The recipient of the coins.
-        :amount : The amount of coins 
+        :sender: The sender of the coins.
+        :recipient: The recipient of the coins.
+        :amount: The amount of coins sent.
     """
 
     def __init__(self, sender, recipient, amount):
