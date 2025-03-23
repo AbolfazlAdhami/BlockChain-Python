@@ -34,6 +34,7 @@ class Node:
         for block in self.blockchain.chain:
             print('Outputting Block')
             print(block)
+            break
         else:
             print('-' * 20)
 
@@ -49,6 +50,8 @@ class Node:
             print('2: Mine a new block')
             print('3: Output the blockchain blocks')
             print('4: Check transaction validity')
+            print('5: Create Wallet')
+            print('6: Load Wallet')
             print('q: Quit')
             user_choice = self.get_user_choice()
             if user_choice == '1':
@@ -69,6 +72,10 @@ class Node:
                     print('All transactions are valid')
                 else:
                     print('There are invalid transactions')
+            elif user_choice == '5':
+                continue
+            elif user_choice == '6':
+                continue
             elif user_choice == 'q':
                 # This will lead to the loop to exist because it's running condition becomes False
                 waiting_for_input = False
