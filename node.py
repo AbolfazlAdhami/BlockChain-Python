@@ -5,11 +5,11 @@ from utility.verifiaction import Verification
 
 
 class Node:
-    """The Node runs the local blockchain instance.
-
+    """The node which runs the local blockchain instance.
+    
     Attributes:
-        id: the id of the node 
-        blockcahin: The blockchain which is run by this node.
+        id: The id of the node.
+        blockchain: The blockchain which is run by this node.
     """
 
     def __init__(self):
@@ -17,14 +17,15 @@ class Node:
         self.blockchain = Blockchain(self.id)
 
     def get_transaction_value(self):
-        """ Returna the input of the user (a new transactions amount) as a float"""
+        """ Returns the input of the user (a new transaction amount) as a float. """
+        # Get the user input, transform it from a string to a float and store it in user_input
         tx_recipient = input('Enter the recipient of the transaction: ')
-        tx_amount = float(input('Your transactions amount please: '))
+        tx_amount = float(input('Your transaction amount please: '))
         return tx_recipient, tx_amount
 
     def get_user_choice(self):
-        """"Prompt the user for its choice and return it."""
-        user_input = input('Your Choice: ')
+        """Prompts the user for its choice and return it."""
+        user_input = input('Your choice: ')
         return user_input
 
     def print_blockchain_elements(self):
