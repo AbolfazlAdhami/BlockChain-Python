@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from blockchain import Blockchain
 from utility.verifiaction import Verification
-
+from wallet import Wallet
 
 class Node:
     """The node which runs the local blockchain instance.
@@ -13,8 +13,8 @@ class Node:
     """
 
     def __init__(self):
-        self.id = 'Abolfazl'
-        self.blockchain = Blockchain(self.id)
+        self.wallet = Wallet()
+        self.blockchain = Blockchain(self.wallet.public_key)
 
     def get_transaction_value(self):
         """ Returns the input of the user (a new transaction amount) as a float. """
@@ -58,7 +58,7 @@ class Node:
                 tx_data = self.get_transaction_value()
                 recipient, amount = tx_data
                 # Add the transaction amount to the blockchain
-                if self.blockchain.add_transaction(recipient, self.id, amount=amount):
+                if self.blockchain.add_transaction(recipient, self.wallet.public_key, amount=amount):
                     print('Added transaction!')
                 else:
                     print('Transaction failed!')
@@ -73,7 +73,7 @@ class Node:
                 else:
                     print('There are invalid transactions')
             elif user_choice == '5':
-                continue
+                self.wallet.create_keys()
             elif user_choice == '6':
                 continue
             elif user_choice == 'q':
@@ -87,7 +87,7 @@ class Node:
                 # Break out of the loop
                 break
             print('Balance of {}: {:6.2f}'.format(
-                self.id, self.blockchain.get_balance()))
+                self.wallet.public_key, self.blockchain.get_balance()))
         else:
             print('User left!')
 
