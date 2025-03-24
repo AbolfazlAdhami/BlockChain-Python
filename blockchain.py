@@ -4,7 +4,7 @@ import json
 
 from block import Block
 from transaction import Transaction
-# Import Utilit
+# Import Utilities
 from utility.hash_util import hash_block
 from utility.verifiaction import Verification
 
@@ -143,6 +143,8 @@ class Blockchain:
             :recipient: The recipient of the coins.
             :amount: The amount of coins sent with the transaction (default = 1.0)
         """
+        if self.hosting_node == None:
+            return False
         transaction = Transaction(sender, recipient, amount)
         if Verification.verify_transaction(transaction, self.get_balance):
             self.__open_transactions.append(transaction)
