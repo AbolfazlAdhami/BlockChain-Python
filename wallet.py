@@ -1,4 +1,6 @@
 from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
 import Crypto.Random
 import binascii
 
@@ -12,13 +14,6 @@ class Wallet:
         private_key, public_key = self.generated_keys()
         self.private_key = private_key
         self.public_key = public_key
-        try:
-            with open('wallet.txt', mode='w') as f:
-                f.write(public_key)
-                f.write('\n')
-                f.write(private_key)
-        except (IOError, IndexError):
-            print("Saving Files Failed...")
 
     def load_keys(self):
         try:
@@ -29,6 +24,16 @@ class Wallet:
         except (IOError, IndexError):
             print("Loading Files Failed...")
 
+    def save_keys(self):
+        if self.public_key != None and self.private_key != None:
+            try:
+                with open('wallet.txt', mode='w') as f:
+                    f.write(self.public_key)
+                    f.write('\n')
+                    f.write(self.private_key)
+            except (IOError, IndexError):
+                print("Saving Files Failed...")
+
     def generated_keys(self):
         private_key = RSA.generate(1024, Crypto.Random.new().read)
         public_key = private_key.publickey()
@@ -38,3 +43,20 @@ class Wallet:
         public_key_hex = binascii.hexlify(
             public_key.export_key(format='DER')).decode('ascii')
         return private_key_hex, public_key_hex
+
+    def sign_transaction(self, sender, recipient, amount):
+        """_summary_
+
+        Args:
+            sender (_type_): _description_
+            recipient (_type_): _description_
+            amount (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        signer = PKCS1_v1_5.new(RSA.importKey(
+            binascii.unhexlify(self.private_key)))
+        h = SHA256.new((str(sender)+str(recipient)+str(amount)).encode('utf8'))
+        signature = signer.sign(h)
+        return binascii.hexlify(signature).decode('ascii')

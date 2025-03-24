@@ -52,13 +52,16 @@ class Node:
             print('4: Check transaction validity')
             print('5: Create Wallet')
             print('6: Load Wallet')
+            print('7: Save Keys')
             print('q: Quit')
             user_choice = self.get_user_choice()
             if user_choice == '1':
                 tx_data = self.get_transaction_value()
                 recipient, amount = tx_data
                 # Add the transaction amount to the blockchain
-                if self.blockchain.add_transaction(recipient, self.wallet.public_key, amount=amount):
+                signature = self.wallet.sign_transaction(
+                    self.wallet.public_key, recipient, amount)
+                if self.blockchain.add_transaction(recipient, self.wallet.public_key, signature, amount=amount):
                     print('Added transaction!')
                 else:
                     print('Transaction failed!')
@@ -79,6 +82,8 @@ class Node:
             elif user_choice == '6':
                 self.wallet.load_keys()
                 self.blockchain = Blockchain(self.wallet.public_key)
+            elif user_choice == '7':
+                self.wallet.save_keys()
             elif user_choice == 'q':
                 # This will lead to the loop to exist because it's running condition becomes False
                 waiting_for_input = False
