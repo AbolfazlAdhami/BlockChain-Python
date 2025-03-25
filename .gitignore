@@ -1,5 +1,57 @@
-/.vscode
-*.txt
-*.csv
-*.p
-*.dat
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.venv/
+env/
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+wheelhouse/
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets and credentials
+.env
+config.json
+secrets.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# pytest cache
+.cache/
+.pytest_cache/
+
+# MyPy cache
+.mypy_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+
+# Text and Bin Files
+wallet.txt
+blockchain.txt
