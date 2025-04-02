@@ -6,25 +6,20 @@ import binascii
 
 
 class Wallet:
+    """Creates ,loads,and holds private keys, Manages transaction signing and verification"""
+
     def __init__(self):
         self.private_key = None
         self.public_key = None
 
     def create_keys(self):
+        """Create a new pair of privet and public keys"""
         private_key, public_key = self.generated_keys()
         self.private_key = private_key
         self.public_key = public_key
 
-    def load_keys(self):
-        try:
-            with open('wallet.txt', mode='r') as f:
-                keys = f.readline()
-                self.public_key = keys[0][:-1]  # [:-1] for skip new line \n
-                self.private_key = keys[1]
-        except (IOError, IndexError):
-            print("Loading Files Failed...")
-
     def save_keys(self):
+        """Saves the keys to a file (wallet.txt)"""
         if self.public_key != None and self.private_key != None:
             try:
                 with open('wallet.txt', mode='w') as f:
@@ -34,7 +29,20 @@ class Wallet:
             except (IOError, IndexError):
                 print("Saving Files Failed...")
 
+    def load_keys(self):
+        """Loads the keys from the wallet.txt file into memory."""
+        try:
+            with open('wallet.txt', mode='r') as f:
+                keys = f.readlines()
+                public_key = keys[0][:-1]  # [:-1] for skip new line \n
+                private_key = keys[1]
+                self.public_key = public_key
+                self.private_key = private_key
+        except (IOError, IndexError):
+            print("Loading Files Failed...")
+
     def generated_keys(self):
+        """Generate a new pair of private and public"""
         private_key = RSA.generate(1024, Crypto.Random.new().read)
         public_key = private_key.publickey()
 
@@ -45,15 +53,15 @@ class Wallet:
         return private_key_hex, public_key_hex
 
     def sign_transaction(self, sender, recipient, amount):
-        """_summary_
+        """Sign a transaction and return the signature.
 
         Args:
-            sender (_type_): _description_
-            recipient (_type_): _description_
-            amount (_type_): _description_
+            sender : The sender of transaction.
+            recipient : The recipient of the Transaction 
+            amount : The amount of the tranaction 
 
-        Returns:
-            _type_: _description_
+        Returns: A Hex binacii number that Should be Valid for Accept Tranaction and build a new Block
+
         """
         signer = PKCS1_v1_5.new(RSA.importKey(
             binascii.unhexlify(self.private_key)))
@@ -63,6 +71,11 @@ class Wallet:
 
     @staticmethod
     def verify_transaction(transaction):
+        """Verify the signature of the transaction.
+
+        Args:
+            transaction : The Transaction that Should be verified 
+        """
         if transaction.sender == 'MINING':
             return True
         public_key = RSA.importKey(binascii.unhexlify(transaction.sender))
