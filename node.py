@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from wallet import Wallet
 from flask_cors import CORS
 from blockchain import Blockchain
@@ -75,6 +75,51 @@ def get_chain():
         dict_block['transactions'] = [
             tx.__dict__ for tx in dict_block['transactions']]
     return jsonify(dict_chain), 200
+
+
+@app.route('/transaction', methods=['POST'])
+def add_transaction():
+    if wallet.public_key == None:
+        response = {
+            'message': 'Adding a block failed.',
+        }
+        return jsonify(response), 401
+    if request.mimetype != 'application/json':
+        response = {
+            'message': 'mim-Type is Wrong change to application/json'
+        }
+        return jsonify(response), 415
+    values = request.get_json()
+    if not values:
+        response = {
+            'message': 'No Data found.'
+        }
+        return jsonify(response), 402
+    require_fields = ['recipient', 'amount']
+    if not all(field in values for field in require_fields):
+        response = {
+            'message': 'Require Data is missing.'
+        }
+        return jsonify(response), 402
+    recipient = values['recipient']
+    amount = values['amount']
+    signature = wallet.sign_transaction(wallet.public_key, recipient, amount)
+    success = blockchain.add_transaction(
+        recipient, wallet.public_key, signature, amount)
+    print(success, "this is where have bug")
+    if success:
+        response = {
+            'message': 'Successfully added tranaction.', 'transaction': {
+                'sender': wallet.public_key, 'recipient': recipient, 'amount': amount, 'signature': signature
+            },
+            'funds': blockchain.get_balance()
+        }
+        return jsonify(response), 201
+    else:
+        response = {
+            'message': 'Creating a transaction failed'
+        }
+        return jsonify(response), 500
 
 
 @app.route('/mine', methods=['POST'])
