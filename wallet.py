@@ -26,8 +26,10 @@ class Wallet:
                     f.write(self.public_key)
                     f.write('\n')
                     f.write(self.private_key)
+                    return True
             except (IOError, IndexError):
                 print("Saving Files Failed...")
+                return False
 
     def load_keys(self):
         """Loads the keys from the wallet.txt file into memory."""
@@ -38,8 +40,10 @@ class Wallet:
                 private_key = keys[1]
                 self.public_key = public_key
                 self.private_key = private_key
+                return True
         except (IOError, IndexError):
             print("Loading Files Failed...")
+            return False
 
     def generated_keys(self):
         """Generate a new pair of private and public"""
