@@ -175,8 +175,8 @@ class Blockchain:
                       copied_transactions, proof)
         for tx in block.transactions:
             if not Wallet.verify_transaction(tx):
-                return False
+                return None
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
-        return True
+        return block
