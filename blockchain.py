@@ -154,6 +154,8 @@ class Blockchain:
 
     def mine_block(self):
         """Create a new block and add open transactions to it."""
+        if self.hosting_node == None:
+            return None
         # Fetch the currently last block of the blockchain
         last_block = self.__chain[-1]
         # Hash the last block (=> to be able to compare it to the stored hash value)
@@ -165,6 +167,7 @@ class Blockchain:
         #     'recipient': owner,
         #     'amount': MINING_REWARD
         # }
+
         reward_transaction = Transaction(
             'MINING', self.hosting_node, "", MINING_REWARD)
         # Copy transaction instead of manipulating the original open_transactions list
