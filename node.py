@@ -25,11 +25,11 @@ def create_keys():
             'funds': blockchain.get_balance()
         }
         return jsonify(response), 201
-    else:
-        response = {
-            'message': "Saving the keys failed."
-        }
-        return jsonify(response), 500
+
+    response = {
+        'message': "Saving the keys failed."
+    }
+    return jsonify(response), 500
 
 
 @app.route('/wallet', methods=['GET'])
@@ -43,11 +43,11 @@ def load_keys():
             'funds': blockchain.get_balance()
         }
         return jsonify(response), 200
-    else:
-        response = {
-            'message': "Saving the keys failed."
-        }
-        return jsonify(response), 500
+
+    response = {
+        'message': "Saving the keys failed."
+    }
+    return jsonify(response), 500
 
 
 @app.route('/balance', methods=['GET'])
@@ -59,12 +59,12 @@ def get_balance():
             'funds': balance
         }
         return jsonify(response), 200
-    else:
-        response = {
-            'message': 'Loading wallet is faulled.',
-            'wallet_set_up': wallet.public_key != None
-        }
-        return jsonify(response), 500
+
+    response = {
+        'message': 'Loading wallet is faulled.',
+        'wallet_set_up': wallet.public_key != None
+    }
+    return jsonify(response), 500
 
 
 @app.route('/chain', methods=['GET'])
