@@ -77,6 +77,13 @@ def get_chain():
     return jsonify(dict_chain), 200
 
 
+@app.route('/transaction', methods=['GET'])
+def get_open_transaction():
+    transactions = blockchain.get_open_transactions()
+    dict_transaction = [tx.__dict__ for tx in transactions]
+    return jsonify(dict_transaction), 200
+
+
 @app.route('/transaction', methods=['POST'])
 def add_transaction():
     if wallet.public_key == None:
