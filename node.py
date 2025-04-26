@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import Flask, jsonify, request, send_from_directory
 from wallet import Wallet
 from flask_cors import CORS
@@ -8,15 +9,17 @@ blockchain = Blockchain(wallet.public_key)
 CORS(app)
 
 
-@app.before_request
-def check_mime_type():
-    # Only apply to methods that typically have a body
-    if request.method in ['POST', 'PUT', 'PATCH'] and not request.is_json:
-        response = {
-            "error": "Unsupported Media Type",
-            "message": "Content-Type must be application/json"
-        }
-        return jsonify(response), 415
+def require_json(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not request.is_json:
+            response = {
+                "error": "Unsupported Media Type",
+                "message": "Content-Type must be application/json"
+            }
+            return jsonify(response), 415
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route('/', methods=['GET'])
@@ -96,6 +99,7 @@ def get_open_transaction():
 
 
 @app.route('/transaction', methods=['POST'])
+@require_json
 def add_transaction():
     if wallet.public_key == None:
         response = {
@@ -156,6 +160,24 @@ def mine():
         }
         return jsonify(response), 500
 
+
+@app.route('/node', methods=['POST'])
+@require_json
+def add_node():
+    values = request.get_json()
+    if not values:
+        response = {
+            'message': 'No Data attached.'
+        }
+        return jsonify(response), 400
+
+    if 'node' not in values:
+        response = {
+            'message': 'No NODE Data attached.'
+        }
+        return jsonify(response), 404
+    node = values['node']
+    blockchain.add_peer_node(node)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)

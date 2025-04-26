@@ -32,7 +32,7 @@ class Blockchain:
         self.__open_transactions = []
         self.load_data()
         self.hosting_node = hosting_node_id
-        self.peer_nodes = set()
+        self.__peer_nodes = set()
     # This turns the chain attribute into a property with a getter (the method below) and a setter (@chain.setter)
 
     @property
@@ -72,7 +72,7 @@ class Blockchain:
                     updated_transactions.append(updated_transaction)
                 self.__open_transactions = updated_transactions
                 peer_nodes = json.loads(file_content[2])
-                self.peer_nodes = set(peer_nodes)
+                self.__peer_nodes = set(peer_nodes)
         except (IOError, IndexError):
             pass
         finally:
@@ -89,7 +89,7 @@ class Blockchain:
                 saveable_tx = [tx.__dict__ for tx in self.__open_transactions]
                 f.write(json.dumps(saveable_tx))
                 f.write('\n')
-                f.write(json.dumps(self.peer_nodes))
+                f.write(json.dumps(self.__peer_nodes))
         except IOError:
             print('Saving failed!')
 
@@ -197,7 +197,7 @@ class Blockchain:
         Arguments:
             :node: The node URL which should be added.
         """
-        self.peer_nodes.add(node)
+        self.__peer_nodes.add(node)
         self.save_data()
 
     def remove_peer_node(self, node):
@@ -206,5 +206,5 @@ class Blockchain:
         Arguments:
             :node: The node URL which should be removed.
         """
-        self.peer_nodes.discard(node)
-        self.save_dataF
+        self.__peer_nodes.discard(node)
+        self.save_data()
