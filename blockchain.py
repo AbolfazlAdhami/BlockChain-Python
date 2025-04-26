@@ -199,3 +199,12 @@ class Blockchain:
         """
         self.peer_nodes.add(node)
         self.save_data()
+
+    def remove_peer_node(self, node):
+        """ Removes a new Node to the peer node set.
+
+        Arguments:
+            :node: The node URL which should be removed.
+        """
+        self.peer_nodes.discard(node)
+        self.save_dataF

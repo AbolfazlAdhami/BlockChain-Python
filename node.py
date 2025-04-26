@@ -8,6 +8,17 @@ blockchain = Blockchain(wallet.public_key)
 CORS(app)
 
 
+@app.before_request
+def check_mime_type():
+    # Only apply to methods that typically have a body
+    if request.method in ['POST', 'PUT', 'PATCH'] and not request.is_json:
+        response = {
+            "error": "Unsupported Media Type",
+            "message": "Content-Type must be application/json"
+        }
+        return jsonify(response), 415
+
+
 @app.route('/', methods=['GET'])
 def get_ui():
     return send_from_directory('ui', 'node.html')
@@ -91,11 +102,6 @@ def add_transaction():
             'message': 'Adding a block failed.',
         }
         return jsonify(response), 401
-    if request.mimetype != 'application/json':
-        response = {
-            'message': 'mim-Type is Wrong change to application/json'
-        }
-        return jsonify(response), 415
     values = request.get_json()
     if not values:
         response = {
