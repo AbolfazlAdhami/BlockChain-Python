@@ -178,6 +178,12 @@ def add_node():
         return jsonify(response), 404
     node = values['node']
     blockchain.add_peer_node(node)
+    response = {
+        'message': 'Node Added successfully.',
+        'all_nodes': list(blockchain.get_peer_node())
+    }
+    return jsonify(response), 201
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
