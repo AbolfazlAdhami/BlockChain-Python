@@ -71,6 +71,7 @@ class Blockchain:
                         tx['sender'], tx['recipient'], tx['signature'], tx['amount'])
                     updated_transactions.append(updated_transaction)
                 self.__open_transactions = updated_transactions
+
                 peer_nodes = json.loads(file_content[2])
                 self.__peer_nodes = set(peer_nodes)
         except (IOError, IndexError):
@@ -89,7 +90,7 @@ class Blockchain:
                 saveable_tx = [tx.__dict__ for tx in self.__open_transactions]
                 f.write(json.dumps(saveable_tx))
                 f.write('\n')
-                f.write(json.dumps(self.__peer_nodes))
+                f.write(json.dumps(list(self.__peer_nodes)))
         except IOError:
             print('Saving failed!')
 
@@ -211,4 +212,4 @@ class Blockchain:
 
     def get_peer_node(self):
         """Return a list of all connected peer nodes."""
-        return self.__peer_nodes[:]
+        return self.__peer_nodes
