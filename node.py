@@ -180,9 +180,27 @@ def add_node():
     blockchain.add_peer_node(node)
     response = {
         'message': 'Node Added successfully.',
-        'all_nodes': list(blockchain.get_peer_node())
+        'all_nodes': blockchain.get_peer_node()
     }
     return jsonify(response), 201
+
+
+@app('/node/<node_url>', methods=['DELETE'])
+def remove_node(node_url):
+    if node_url == '' or node_url == None:
+        response = {
+            'message': 'No Node found.'
+        }
+        return jsonify(response), 404
+    blockchain.remove_peer_node(node_url)
+    response = {
+        'message': 'Node Removed.',
+        'all_nodes': blockchain.get_peer_node()
+    }
+    return jsonify(response), 200
+
+
+
 
 
 if __name__ == '__main__':

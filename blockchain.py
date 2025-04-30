@@ -212,4 +212,4 @@ class Blockchain:
 
     def get_peer_node(self):
         """Return a list of all connected peer nodes."""
-        return self.__peer_nodes
+        return list(self.__peer_nodes)
