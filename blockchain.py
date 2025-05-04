@@ -71,9 +71,9 @@ class Blockchain:
                         tx['sender'], tx['recipient'], tx['signature'], tx['amount'])
                     updated_transactions.append(updated_transaction)
                 self.__open_transactions = updated_transactions
-
                 peer_nodes = json.loads(file_content[2])
                 self.__peer_nodes = set(peer_nodes)
+                print(self.__peer_nodes, "self data")
         except (IOError, IndexError):
             pass
         finally:
@@ -212,4 +212,5 @@ class Blockchain:
 
     def get_peer_node(self):
         """Return a list of all connected peer nodes."""
+        print(self.__peer_nodes)
         return list(self.__peer_nodes)
