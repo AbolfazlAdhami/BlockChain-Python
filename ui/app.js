@@ -113,7 +113,7 @@ new Vue({
     onLoadData: function () {
       const vm = this;
       this.dataLoading = true;
-      const url = this.view === "chain" ? "/chain" : "/transactions";
+      const url = this.view === "chain" ? "/chain" : "/transaction";
 
       axios
         .get(url)
