@@ -17,7 +17,7 @@
   </head>
   <body>
     <div id="app">
-      <div class="container">
+      <div class="container text-left">
         <div class="row mb-3">
           <div class="col">
             <h1>Manage your Blockchain</h1>
@@ -25,6 +25,19 @@
         </div>
         <div v-if="error" class="alert alert-danger" role="alert">{{ error }}</div>
         <div v-if="success" class="alert alert-success" role="alert">{{ success }}</div>
+        <div class="row">
+            <div class="col">
+              <ul class="nav nav-pills">
+                <li class="nav-item">
+                  <a class="nav-link active" href="/">Wallet &amp; Node</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link " href="/network">Network</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <hr />
         <div class="row">
           <div class="col">
             <div v-if="!walletLoading">
