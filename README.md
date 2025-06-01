@@ -15,8 +15,8 @@ BlockChain-Python/
 ├── ui/ # Contains UI files (e.g., Flask or frontend interface)
 │ └── app.js 
 │ └── node.html # Web interface for interacting with the blockchain
-│ └── style.css #
-├── uitillity/ # Contains utility 
+│ └── style.css 
+├── utility/ # Contains utility 
 │ └── hash_util.py # Hashes a block/string and returns a string representation of it
 │ └── printble.py # A base class which implements printing functionality
 │ └── verification.py # A helper class which offer various static and class-based verification and validation methods.
