@@ -1,4 +1,4 @@
-import Vue from "vue";
+// import Vue from "vue";
 import WalletActions from "./components/WalletActions.js";
 import TransactionForm from "./components/TransactionForm.js";
 import BlockchainView from "./components/BlockchainView.js";
