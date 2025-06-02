@@ -22,14 +22,14 @@ def require_json(f):
     return decorated_function
 
 
-@app.route('/', methods=['GET'])
-def get_ui():
-    return send_from_directory('ui', 'node.html')
+@app.route('/', methods=['GET', 'POST'])
+def get_form():
+    return send_from_directory('templates', 'index.html')
 
 
-@app.route('/network', methods=['GET'])
-def get_network_ui():
-    return send_from_directory('ui', 'network.html')
+# @app.route('/network', methods=['GET'])
+# def get_network_ui():
+#     return send_from_directory('templates', 'network.html')
 
 
 @app.route('/wallet', methods=['POST'])
