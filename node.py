@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, render_template
 from wallet import Wallet
 from flask_cors import CORS
 from blockchain import Blockchain
@@ -24,7 +24,7 @@ def require_json(f):
 
 @app.route('/', methods=['GET', 'POST'])
 def get_form():
-    return send_from_directory('templates', 'index.html')
+    return render_template('index.html')
 
 
 # @app.route('/network', methods=['GET'])
