@@ -8,6 +8,7 @@ from wallet import Wallet
 # Import Utilities
 from utility.hash_util import hash_block
 from utility.verifiaction import Verification
+import requests
 
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10
@@ -158,6 +159,15 @@ class Blockchain:
         if Verification.verify_transaction(transaction, self.get_balance):
             self.__open_transactions.append(transaction)
             self.save_data()
+            for node in self.__peer_nodes:
+                url='http://{}/brodcast-transaction'.format(node)
+                try:
+                    response= requests.post(url,json={'sender':sender,'recipient':recipient,'amount':amount})
+                    if response.status_code==400 or response.status_code==500:
+                        print("Transaction declined, needs resolving")
+                        return False
+                except requests.exceptions.ConnectionError:
+                    continue           
             return True
         return False
 
