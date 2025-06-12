@@ -22,7 +22,7 @@ class Blockchain:
         :hosting_node: The connected node (which runs the blockchain).
     """
 
-    def __init__(self, hosting_node_id):
+    def __init__(self, public_key,node_id):
         """The constructor of the Blockchain class."""
         # Our starting block for the blockchain
         genesis_block = Block(0, '', [], 100, 0)
@@ -30,9 +30,10 @@ class Blockchain:
         self.chain = [genesis_block]
         # Unhandled transactions
         self.__open_transactions = []
-        self.load_data()
-        self.hosting_node = hosting_node_id
+        self.public_key= public_key
         self.__peer_nodes = set()
+        self.node_id=node_id
+        self.load_data()
     # This turns the chain attribute into a property with a getter (the method below) and a setter (@chain.setter)
 
     @property
@@ -51,7 +52,7 @@ class Blockchain:
     def load_data(self):
         """Initialize blockchain + open transactions data from a file."""
         try:
-            with open('blockchain.txt', mode='r') as f:
+            with open('blockchain-{}.txt'.format(self.node_id), mode='r') as f:
                 file_content = f.readlines()
                 blockchain = json.loads(file_content[0][:-1])
                 # We need to convert  the loaded data because Transactions should use OrderedDict
@@ -82,7 +83,7 @@ class Blockchain:
     def save_data(self):
         """Save blockchain + open transactions snapshot to a file."""
         try:
-            with open('blockchain.txt', mode='w') as f:
+            with open('blockchain-{}.txt'.format(self.node_id), mode='w') as f:
                 saveable_chain = [block.__dict__ for block in [Block(block_el.index, block_el.previous_hash, [
                     tx.__dict__ for tx in block_el.transactions], block_el.proof, block_el.timestamp) for block_el in self.__chain]]
                 f.write(json.dumps(saveable_chain))
@@ -107,7 +108,7 @@ class Blockchain:
     def get_balance(self):
         """Calculate and return the balance for a participant.
         """
-        if self.hosting_node == None:
+        if self.public_key== None:
             return None
         participant = self.hosting_node
         # Fetch a list of all sent coin amounts for the given person (empty lists are returned if the person was NOT the sender)
@@ -149,7 +150,7 @@ class Blockchain:
             :recipient: The recipient of the coins.
             :amount: The amount of coins sent with the transaction (default = 1.0)
         """
-        if self.hosting_node == None:
+        if self.public_key== None:
             return False
         transaction = Transaction(sender, recipient, signature, amount)
         if not Wallet.verify_transaction(transaction):
@@ -162,7 +163,7 @@ class Blockchain:
 
     def mine_block(self):
         """Create a new block and add open transactions to it."""
-        if self.hosting_node == None:
+        if self.public_key== None:
             return None
         # Fetch the currently last block of the blockchain
         last_block = self.__chain[-1]
