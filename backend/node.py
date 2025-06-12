@@ -19,27 +19,12 @@ def require_json(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
-# @app.route('/src/<path:filename>')
-# def serve_src(filename):
-#     return send_from_directory('src', filename)
-
-# @app.route('/', methods=['GET', 'POST'])
-# def get_form():
-#     return render_template('index.html')
-
-
-# @app.route('/network', methods=['GET'])
-# def get_network_ui():
-#     return send_from_directory('templates', 'network.html')
-
-
 @app.route('/wallet', methods=['POST'])
 def create_keys():
     wallet.create_keys()
     if wallet.save_keys():
         global blockchain
-        blockchain = Blockchain(wallet.public_key)
+        blockchain = Blockchain(wallet.public_key,port)
         response = {
             'public_key': wallet.public_key,
             'private_key': wallet.private_key,
@@ -57,7 +42,7 @@ def create_keys():
 def load_keys():
     if wallet.load_keys():
         global blockchain
-        blockchain = Blockchain(wallet.public_key)
+        blockchain = Blockchain(wallet.public_key,port)
         response = {
             'public_key': wallet.public_key,
             'private_key': wallet.private_key,
