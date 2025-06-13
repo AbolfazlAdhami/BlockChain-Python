@@ -93,7 +93,7 @@ def broadcast_tranaction():
     if not all(key in values for key in required):
         response={'message':'Some Data is Missing'}
         return jsonify(response),422     
-    success=blockchain.add_transaction(values['recipient'],values['sender'],values['signature'])  
+    success=blockchain.add_transaction(values['recipient'],values['sender'],values['signature'],values['amount'])  
     if success:
             response = {
             'message': 'Successfully added tranaction.', 'transaction': {
