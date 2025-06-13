@@ -82,7 +82,27 @@ def get_chain():
             tx.__dict__ for tx in dict_block['transactions']]
     return jsonify(dict_chain), 200
 
-
+@app.route('/broadcast-transaction',methods=['POST'])
+@require_json
+def broadcast_tranaction():
+    values=request.get_json()
+    if not values:
+        response={'message':'Not Data Found'}
+        return jsonify(response),400
+    required=['sender','recipient','amount','signature']
+    if not all(key in values for key in required):
+        response={'message':'Some Data is Missing'}
+        return jsonify(response),422     
+    success=blockchain.add_transaction(values['recipient'],values['sender'],values['signature'])  
+    if success:
+            response = {
+            'message': 'Successfully added tranaction.', 'transaction': {
+                'sender': values['sender'], 'recipient': values['recipient'], 'amount': values['amount'], 'signature': values['signature']
+            },
+            'funds': blockchain.get_balance()
+            }
+            return jsonify(response), 201
+        
 @app.route('/transaction', methods=['GET'])
 def get_open_transaction():
     transactions = blockchain.get_open_transactions()
