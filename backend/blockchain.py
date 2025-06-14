@@ -23,7 +23,7 @@ class Blockchain:
         :hosting_node: The connected node (which runs the blockchain).
     """
 
-    def __init__(self, public_key,node_id):
+    def __init__(self, public_key, node_id):
         """The constructor of the Blockchain class."""
         # Our starting block for the blockchain
         genesis_block = Block(0, '', [], 100, 0)
@@ -31,9 +31,9 @@ class Blockchain:
         self.chain = [genesis_block]
         # Unhandled transactions
         self.__open_transactions = []
-        self.public_key= public_key
+        self.public_key = public_key
         self.__peer_nodes = set()
-        self.node_id=node_id
+        self.node_id = node_id
         self.load_data()
     # This turns the chain attribute into a property with a getter (the method below) and a setter (@chain.setter)
 
@@ -106,15 +106,15 @@ class Blockchain:
             proof += 1
         return proof
 
-    def get_balance(self,sender=None):
+    def get_balance(self, sender=None):
         """Calculate and return the balance for a participant.
         """
-        if sender==None:
-            if self.public_key== None:
+        if sender == None:
+            if self.public_key == None:
                 return None
             participant = self.hosting_node
-        else: 
-            participant=sender    
+        else:
+            participant = sender
         # Fetch a list of all sent coin amounts for the given person (empty lists are returned if the person was NOT the sender)
         # This fetches sent amounts of transactions that were already included in blocks of the blockchain
         tx_sender = [[tx.amount for tx in block.transactions
@@ -146,7 +146,7 @@ class Blockchain:
     # One required one (transaction_amount) and one optional one (last_transaction)
     # The optional one is optional because it has a default value => [1]
 
-    def add_transaction(self, recipient, sender, signature, amount=1.0,is_receiving=True):
+    def add_transaction(self, recipient, sender, signature, amount=1.0, is_receiving=True):
         """ Append a new value as well as the last blockchain value to the blockchain.
 
         Arguments:
@@ -154,7 +154,7 @@ class Blockchain:
             :recipient: The recipient of the coins.
             :amount: The amount of coins sent with the transaction (default = 1.0)
         """
-        if self.public_key== None:
+        if self.public_key == None:
             return False
         transaction = Transaction(sender, recipient, signature, amount)
         if not Wallet.verify_transaction(transaction):
@@ -164,20 +164,21 @@ class Blockchain:
             self.save_data()
             if not is_receiving:
                 for node in self.__peer_nodes:
-                    url='http://{}/broadcast-transaction'.format(node)
+                    url = 'http://{}/broadcast-transaction'.format(node)
                     try:
-                        response= requests.post(url,json={'sender':sender,'recipient':recipient,'amount':amount})
-                        if response.status_code==400 or response.status_code==500:
+                        response = requests.post(
+                            url, json={'sender': sender, 'recipient': recipient, 'amount': amount})
+                        if response.status_code == 400 or response.status_code == 500:
                             print("Transaction declined, needs resolving")
                             return False
                     except requests.exceptions.ConnectionError:
-                        continue           
+                        continue
             return True
         return False
 
     def mine_block(self):
         """Create a new block and add open transactions to it."""
-        if self.public_key== None:
+        if self.public_key == None:
             return None
         # Fetch the currently last block of the blockchain
         last_block = self.__chain[-1]
@@ -205,19 +206,33 @@ class Blockchain:
         self.__chain.append(block)
         self.__open_transactions = []
         self.save_data()
+        for node in self.__peer_nodes:
+            url = 'http://{}/broadcast-block'.format(node)
+            coverted_block = block.__dict__.copy()
+            coverted_block['transactions'] = [
+                tx.__dict__ for tx in coverted_block]
+            try:
+                response = requests.post(url, json={'block': coverted_block})
+                if response.status_code == 400 or response.status_code == 500:
+                    print("Block declined,need resolving.")
+            except requests.exceptions.ConnectionError:
+                continue
         return block
 
-    def  add_block(self,block):
-        transactions=[Transaction(tx['sender'],tx['recipient'],tx['signature'],tx['amount']) for tx in block['transaction']]
-        proof_if_valid = Verification.valid_proof(transactions,block['previous_hash'],block['proof'])
-        hashes_match=hash_block(self.chain[-1])==block['previous_hash']
+    def add_block(self, block):
+        transactions = [Transaction(
+            tx['sender'], tx['recipient'], tx['signature'], tx['amount']) for tx in block['transaction']]
+        proof_if_valid = Verification.valid_proof(
+            transactions, block['previous_hash'], block['proof'])
+        hashes_match = hash_block(self.chain[-1]) == block['previous_hash']
         if not proof_if_valid or not hashes_match:
             return False
-        converted_block=Block(block['index'],block['previous_hash'],transactions,block['proof'],block['timestamp'])
+        converted_block = Block(
+            block['index'], block['previous_hash'], transactions, block['proof'], block['timestamp'])
         self.__chain.append(converted_block)
         self.save_data()
         return True
-        
+
     def add_peer_node(self, node):
         """ Adds a new Node to the peer node set.
 
