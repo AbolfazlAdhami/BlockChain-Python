@@ -125,14 +125,14 @@ def broadcast_block():
         else:
             response = {'message': 'Block seems invalid.'}
             return jsonify(response), 500
-
     elif block['index'] > blockchain.chain[-1].index:
-        pass
+        response = {
+            'message': 'Blockchain seems to differ from local blockchain.'}
+        return jsonify(response), 200
     else:
         response = {
             'message': 'Blockchain seems to be shorter, block not added '}
-        return jsonify(response), 409\
-
+        return jsonify(response), 409
 
 
 @app.route('/transaction', methods=['GET'])
