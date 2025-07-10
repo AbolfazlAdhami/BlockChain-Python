@@ -8,10 +8,10 @@ import binascii
 class Wallet:
     """Creates ,loads,and holds private keys, Manages transaction signing and verification"""
 
-    def __init__(self,node_id):
+    def __init__(self, node_id):
         self.private_key = None
         self.public_key = None
-        self.node_id=node_id
+        self.node_id = node_id
 
     def create_keys(self):
         """Create a new pair of privet and public keys"""
