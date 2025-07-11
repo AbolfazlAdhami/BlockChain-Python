@@ -1,14 +1,13 @@
-from functools import reduce
-import json
-
-
 from block import Block
 from transaction import Transaction
 from wallet import Wallet
 # Import Utilities
 from utility.hash_util import hash_block
 from utility.verifiaction import Verification
+from functools import reduce
 import requests
+import json
+
 
 # The reward we give to miners (for creating a new block)
 MINING_REWARD = 10

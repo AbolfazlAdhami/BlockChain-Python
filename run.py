@@ -1,8 +1,6 @@
-from functools import wraps
-from flask import Flask, jsonify, request
-from wallet import Wallet
-from flask_cors import CORS
-from blockchain import Blockchain
+from .app import Wallet
+from .app import Blockchain
+from .app import app
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

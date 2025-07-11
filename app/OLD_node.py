@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from blockchain import Blockchain
 from utility.verifiaction import Verification
 from wallet import Wallet
