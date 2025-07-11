@@ -1,6 +1,6 @@
-from .app import Wallet
-from .app import Blockchain
-from .app import app
+from app.wallet import Wallet
+from app.blockchain import Blockchain
+from app.node import app
 
 if __name__ == '__main__':
     from argparse import ArgumentParser

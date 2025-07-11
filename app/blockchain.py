@@ -1,5 +1,5 @@
-from block import Block
-from transaction import Transaction
+from models.block import Block
+from models.transaction import Transaction
 from wallet import Wallet
 # Import Utilities
 from utility.hash_util import hash_block
